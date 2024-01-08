@@ -1,18 +1,19 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
 
-:root {
-  --color-main: #71c6dd;
-  --color-main-light: #e1f6fb;
-  --color-dark: #3f4156;
-  --color-dark-medium: #51546e;
-  --color-dark-light: #696d97;
-  --color-light: #e5e5e5;
-  --color-gray: #8b8b8b;
-  --color-light-gray: #b2bdbd;
-  --color-bg: #2d2d39;
-  --color-success: #5dd693;
-  --color-error: #fc4b0b;
+:root { 
+  --color-main: #6d9051;  
+  --color-main-light: #aac393;  
+  --color-dark: #273f2e;  
+  --color-dark-medium: #2c492e;  
+  --color-dark-light: #4d753e; 
+  --color-light: #ffffff;  
+  --color-gray: #efeeec; 
+  --color-light-gray: #fdfdfc;  
+  --color-bg: #b9bbaf;  
+  --color-success: #00C853;  
+  --color-error: #b74b4b;  
 }
+
 
 /*========== base styles ==========*/
 
@@ -283,8 +284,8 @@ a {
 }
 
 .header__logo > img {
-  height: 3.2rem;
-  width: 3.2rem;
+  height: 4.2rem;
+  width: 4.2rem;
 }
 
 .header__logo > h1 {
@@ -314,7 +315,7 @@ a {
   background: transparent;
   border: none;
   outline: none;
-  color: var(--color-light);
+  color: var(--color-light-gray);
 }
 
 @media screen and (max-width: 800px) {
