@@ -18,8 +18,12 @@ RUN pip install -r requirements.txt
 # Copy the Django project files
 COPY . /app/
 
+# Run migrations and collect static files
+RUN python manage.py migrate
+# RUN python manage.py collectstatic --no-input
+
 # Expose the port that the app will run on
 EXPOSE 8000
 
 # Run the Gunicorn server
-CMD ["gunicorn", "StuddyBuddy.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "StudyBuddy.wsgi:application", "--bind", "0.0.0.0:8000"]
