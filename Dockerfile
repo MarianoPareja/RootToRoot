@@ -26,4 +26,4 @@ RUN python manage.py migrate
 EXPOSE 8000
 
 # Run the Gunicorn server
-CMD ["gunicorn", "StudyBuddy.wsgi:application", "--bind", "0.0.0.0:8000"]
+CMD ["gunicorn", "RootToRoot.wsgi:application", "--bind", "0.0.0.0:8000"]
