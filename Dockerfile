@@ -10,6 +10,9 @@ ENV PYTHONUNBUFFERED=1
 RUN mkdir /app
 WORKDIR /app
 
+# Install Nginx
+RUN apt-get update && apt-get install -y nginx
+
 # Install dependencies
 COPY requirements.txt /app/
 RUN pip install --upgrade pip
@@ -17,10 +20,12 @@ RUN pip install -r requirements.txt
 
 # Copy the Django project files
 COPY . /app/
+WORKDIR /app/RootToRoot
 
 # Run migrations and collect static files
-RUN python manage.py migrate
-# RUN python manage.py collectstatic --no-input
+RUN python manage.py makemigrations
+RUN python manage.py migrate --no-input
+RUN python manage.py collectstatic --no-input
 
 # Expose the port that the app will run on
 EXPOSE 8000
