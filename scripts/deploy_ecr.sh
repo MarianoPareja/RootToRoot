@@ -10,14 +10,14 @@ terraform plan -target=module.ecr -out=ecr-plan.out
 terraform apply "ecr-plan.out"
 
 # Authenticate to AWS
-aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin {account_id}.dkr.ecr.sa-east-1.amazonaws.com
+aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
 # Build and push docker containers
 cd $PROJECT_FOLDER_DIR
 docker-compose build
 
-docker tag roottoroot-nginx {account_id}.dkr.ecr.sa-east-1.amazonaws.com/ecr-repo:nginx-latest
-docker tag roottoroot-django-gunicorn {account_id}.dkr.ecr.sa-east-1.amazonaws.com/ecr-repo:guinicorn-latest
+docker tag roottoroot-nginx ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ecr-repo:nginx-latest
+docker tag roottoroot-django-gunicorn ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ecr-repo:guinicorn-latest
 
-docker push {account_id}.dkr.ecr.sa-east-1.amazonaws.com/ecr-repo:nginx-latest
-docker push {account_id}.dkr.ecr.sa-east-1.amazonaws.com/ecr-repo:guinicorn-latest
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ecr-repo:nginx-latest
+docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/ecr-repo:guinicorn-latest
