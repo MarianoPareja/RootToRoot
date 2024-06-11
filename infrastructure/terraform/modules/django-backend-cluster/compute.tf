@@ -1,112 +1,115 @@
-# VARIABLES 
-variable "ec2_security_group_id" {
-  type = string
+## EC2 Launch Template 
+
+data "aws_ami" "amazon_linux_2" {
+  most_recent = true
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "owner-alias"
+    values = ["amazon"]
+  }
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-ecs-hvm-*-x86_64-ebs"]
+  }
+
+  owners = ["amazon"]
 }
 
-variable "ecs_subnets" {
-  type = list(string)
-}
+# AWS Launch Template
 
-variable "ecs_sg_subnets" {
-  type = list(string)
-}
+resource "aws_launch_template" "ecs_launch_template" {
+  name                   = "EC2_LaunchTemplate_${var.environment}"
+  image_id               = data.aws_ami.amazon_linux_2.image_id
+  instance_type          = var.instance_type
+  key_name               = "gunicorn-webserver"
+  user_data              = filebase64("${path.module}/ecs.sh")
+  vpc_security_group_ids = [aws_security_group.ec2.id]
 
-
-# EC2 LAUNCH TEMPLATE
-
-resource "aws_launch_template" "ecs_lt" {
-  name_prefix   = "ecs-template"
-  image_id      = "ami-062c116e449466e7f"
-  instance_type = "t2.micro"
-
-  key_name               = ""
-  vpc_security_group_ids = [ec2_security_group.id]
   iam_instance_profile {
-    name = "ecsInstanceRole"
+    arn = aws_iam_instance_profile.ec2_instance_role_profile.arn
   }
 
-  block_device_mappings {
-    device_name = "/dev/xvda"
-    ebs {
-      volume_size = 10
-      volume_type = "gp2"
-    }
-  }
-
-  user_data = filebase64("${path.module}/ecs.sh")
 }
 
-# EC2 AUTOSCALING GROUP
-
-resource "aws_autoscaling_group" "ecs_ag" {
-  vpc_zone_identifier = var.ecs_sg_subnets
-  desired_capacity    = 1
-  min_size            = 1
-  max_size            = 2
-
-  launch_template {
-    id      = aws_launch_template.ecs_lt.id
-    version = "$latest"
-  }
-}
-
-# ECS CLUSTER
+##### Elastic Container Service #####
 
 resource "aws_ecs_cluster" "ecs_cluster" {
-  name = "django-ecs-cluster"
-}
+  name = "ECSCluster_${var.environment}"
 
-resource "aws_ecs_capacity_provider" "ecs_capacity_provider" {
-  name = "ec2_capacity_provider"
+  lifecycle {
+    create_before_destroy = false
+  }
 
-  auto_scaling_group_provider {
-    auto_scaling_group_arn = aws_autoscaling_group.ecs_ag.arn
-
-    managed_scaling {
-      minimum_scaling_step_size = 1
-      maximum_scaling_step_size = 1
-      status                    = "ENABLED"
-      target_capacity           = 80
-    }
+  tags = {
+    Name = "ECSCluster_${var.environment}"
   }
 }
 
-resource "aws_ecs_cluster_capacity_providers" "ecs_cluster_provider" {
-  cluster_name       = aws_ecs_cluster.ecs_cluster.name
-  capacity_providers = [aws_ecs_capacity_provider.ecs_capacity_provider.name]
+resource "aws_ecs_service" "service" {
+  name            = "ECS_Service_${var.environment}"
+  iam_role        = aws_iam_role.ecs_service_role.arn
+  cluster         = aws_ecs_cluster.ecs_cluster.arn
+  task_definition = aws_ecs_task_definition.django-website-task-definition.arn
 
-  default_capacity_provider_strategy {
-    base              = 1
-    weight            = 100
-    capacity_provider = aws_ecs_capacity_provider.ecs_capacity_provider.name
+  load_balancer {
+    target_group_arn = aws_alb_target_group.service_target_group.arn
+    container_name   = "nginx-latest"
+    container_port   = 80
   }
 
-}
+  ordered_placement_strategy {
+    type  = "spread"
+    field = "attribute:ecs.availability-zone"
+  }
 
-# ECS TASK DEFINITION
+  ordered_placement_strategy {
+    type  = "binpack"
+    field = "memory"
+  }
+
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
+}
 
 resource "aws_ecs_task_definition" "django-website-task-definition" {
-  family             = "ecs-django-task"
-  network_mode       = "awsvpc"
-  execution_role_arn = "arn:aws:iam::532199187081:role/ecsTaskExecutionRole" # CHECK LATER
+  family             = "ECS_TaskDefinition_${var.environment}"
+  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn      = aws_iam_role.ecs_task_iam_role.arn
 
-  runtime_platform {
-    operating_system_family = "LINUX"
-    cpu_architecture        = "X86_64"
-  }
 
-  container_definitions = jsondecode([
+  container_definitions = jsonencode([
     {
-      "name"       = "django-website-backend",
-      "image"      = "",
+      "name"       = "nginx-latest",
+      "image"      = "nginx-latest",
+      "cpu"        = 100,
+      "memory"     = 256,
+      "essentials" = true,
+      "portMappings" = [
+        {
+          containerPort = 80,
+          hostPort      = 80,
+          protocol      = "tcp"
+        }
+      ]
+    },
+    {
+      "name"       = "gunicorn",
+      "image"      = "guinicorn-latest",
       "cpu"        = 256,
       "memory"     = 512,
       "essentials" = true,
-      "portMapping" = [
+      "portMappings" = [
         {
-          containerPort = 0
-          hostPort      = 8000
-          protocol      = "TCP"
+          containerPort = 8000,
+          hostPort      = 8000,
+          protocol      = "tcp"
         }
       ]
     }
@@ -114,43 +117,103 @@ resource "aws_ecs_task_definition" "django-website-task-definition" {
 
 }
 
-# ECS SERVICE
+resource "aws_ecs_cluster_capacity_providers" "cas" {
+  cluster_name       = aws_ecs_cluster.ecs_cluster.name
+  capacity_providers = [aws_ecs_capacity_provider.cas.name]
+}
 
-resource "aws_ecs_service" "ecs_django_service" {
-  name            = "ecs-django-service"
-  cluster         = aws_ecs_cluster.ecs_cluster.arn
-  task_definition = aws_ecs_task_definition.django-website-task-definition.arn
-  desired_count   = 2
+resource "aws_ecs_capacity_provider" "cas" {
+  name = "CapacityProviderECS_${var.environment}"
 
-  network_configuration {
-    subnets         = var.ecs_subnets
-    security_groups = var.ecs_sg_subnets
+  auto_scaling_group_provider {
+    auto_scaling_group_arn         = aws_autoscaling_group.ecs_autoscaling_group.arn
+    managed_termination_protection = "ENABLED"
+
+    managed_scaling {
+      maximum_scaling_step_size = 1
+      minimum_scaling_step_size = 1
+      status                    = "ENABLED"
+      target_capacity           = 2
+    }
+  }
+}
+
+resource "aws_autoscaling_group" "ecs_autoscaling_group" {
+  name                  = "ASG_${var.environment}"
+  min_size              = 1
+  max_size              = 1
+  vpc_zone_identifier   = aws_subnet.private.*.id
+  health_check_type     = "EC2"
+  protect_from_scale_in = true
+
+  launch_template {
+    id      = aws_launch_template.ecs_launch_template.id
+    version = "$Latest"
   }
 
-  force_new_deployment = true
-  placement_constraints {
-    type = "distinctInstance"
+  instance_refresh {
+    strategy = "Rolling"
   }
 
-  triggers = {
-    redeployment = timestamp()
+  lifecycle {
+    create_before_destroy = false
   }
+}
 
-  capacity_provider_strategy {
-    capacity_provider = aws_ecs_capacity_provider.ecs_capacity_provider.name
-    weight            = 100
+## Task Level target tracking
+
+resource "aws_appautoscaling_target" "ecs_target" {
+  max_capacity       = 2
+  min_capacity       = 1
+  resource_id        = "service/${aws_ecs_cluster.ecs_cluster.name}/${aws_ecs_service.service.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "ecs_cpu_policy" {
+  name               = "CPUTargetTrackingScaling_${var.environment}"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    target_value = 90
+
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageCPUUtilization"
+    }
   }
+}
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.ecs_tg.arn
-    container_name   = "dockergs"
-    container_port   = 80
+resource "aws_appautoscaling_policy" "ecs_memory_policy" {
+  name               = "MemoryTargetTrackingScaling_${var.environment}"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs_target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs_target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs_target.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    target_value = 90
+
+    predefined_metric_specification {
+      predefined_metric_type = "ECSServiceAverageMemoryUtilization"
+    }
   }
-
-  depends_on = [aws_autoscaling_group.ecs_ag]
-
-
 }
 
 
+##### BASTION HOST #####
 
+resource "aws_instance" "bastion_host" {
+  ami                         = data.aws_ami.amazon_linux_2.image_id
+  instance_type               = "t2.micro"
+  subnet_id                   = aws_subnet.public[0].id
+  associate_public_ip_address = true
+  key_name                    = "gunicorn-webserver"
+  vpc_security_group_ids      = [aws_security_group.bastion_host.id]
+
+  tags = {
+    Name = "EC2_BastionHost_${var.environment}"
+  }
+}
