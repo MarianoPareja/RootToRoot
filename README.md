@@ -19,14 +19,16 @@ Swap, don't shop! Find new treasures and give your unwanted items a second life.
 <img src="./.assets/imgs/infrastructure-architecture.png"/>
 
 ## Deployment
+> [!Warning]
+> Remember to run 'terraform destroy' or the script /scripts/destroy_infra_resources.sh' to avoid being charged by AWS'
 
 ### Variables Configuration 
 First, configure the following environment variables:
 
-- AWS_ACCESS_KEY:Your AWS Access Key with necessary permissions attached
-- AWS_SECRET_KEY:Your AWS Secret Key with necessary permissions attached
-- AWS_ACCOUNT_ID:Your account ID (i.e. 5254-7698-8654)
-- AWS_REGION: AWS Region to deploy your resources (i.e. "sa-east-1")
+- **AWS_ACCESS_KEY** = Your AWS Access Key with necessary permissions attached
+- **AWS_SECRET_KEY** = Your AWS Secret Key with necessary permissions attached
+- **AWS_ACCOUNT_ID** = Your account ID (i.e. 5254-7698-8654)
+- **AWS_REGION** = AWS Region to deploy your resources (i.e. "sa-east-1")
 
 
 1. Create ECR Repository and upload docker images 
@@ -70,8 +72,8 @@ docker-compose up
 ```
 
 Application will be running on port 80 (nginx port)
-[!NOTE]  
-You can still access through port 8000 but no style will be fetched.
+> [!NOTE]  
+> You can still access through port 8000 but no style will be fetched.
 
 ## Website GUI
 
