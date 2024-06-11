@@ -15,15 +15,29 @@ Swap, don't shop! Find new treasures and give your unwanted items a second life.
 - [Local Debuggin](#local-debugging)
 - [App Preview](#AppPreview)
 
-## Solutions Architecture
-
-
 ## Cloud Infrastucture
-### AWS Cloud Infrastructure
 <img src="./.assets/imgs/infrastructure-architecture.png"/>
 
 ## Deployment
 
+### Variables Configuration 
+First, configure the following environment variables:
+
+- AWS_ACCESS_KEY:Your AWS Access Key with necessary permissions attached
+- AWS_SECRET_KEY:Your AWS Secret Key with necessary permissions attached
+- AWS_ACCOUNT_ID:Your account ID (i.e. 5254-7698-8654)
+- AWS_REGION: AWS Region to deploy your resources (i.e. "sa-east-1")
+
+
+1. Create ECR Repository and upload docker images 
+``` bash 
+bash ./scripts/deploy_ecr.sh
+```
+
+2. Build network and compute resources
+``` bash 
+bash ./scripts/deploy_infrastructure.sh
+```
 
 ## Main Tech Stack
 
@@ -44,6 +58,7 @@ Swap, don't shop! Find new treasures and give your unwanted items a second life.
 
 ## Local Debuggin 
 Application was debuuged withe the following versions: 
+- Environment == MacOS Sonoma 14.4.1
 - Python Version == 3.8.19 
 - Docker version == 26.0.0 
 - Docker-compose version == 2.26.1 
