@@ -20,12 +20,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-y7nuy!0spk%!r61ovr$rvf(4_sa)7g+6tpr72%o5dcw0p_x9ir"
+SECRET_KEY = "y7nuy!0spk%!r61ovr$rvf(4_sa)7g+6tpr72%o5dcw0p_x9ir"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ["django", "localhost"]
+# Keep list tight to prevent host headers attacks
+ALLOWED_HOSTS = ["*"]
+
+# Security
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 0
 
 
 # Application definition
@@ -37,10 +44,15 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Created apps
     "base.apps.BaseConfig",
     "rest_framework",
     "corsheaders",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.github",
+    "allauth.socialaccount.providers.reddit",
+    "allauth.socialaccount.providers.lichess",
 ]
 
 AUTH_USER_MODEL = "base.User"
@@ -54,6 +66,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "RootToRoot.urls"
@@ -116,6 +129,23 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Authentication Backends
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
+SOCIALACCOUNT_PROVIDERS = {
+    "reddit": {
+        "AUTH_PARAMS": {"duration": "permanent"},
+        "SCOPE": ["identity", "submit"],
+        "USER_AGENT": "django:socialapp:1.0 (by /u/necrick)",
+    },
+    "lichess": {
+        "APP": {"client_id": "LICHESS_CLIENT_ID", "secret": "LICHESS_CLIENT_SECRET"},
+    },
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -134,13 +164,13 @@ USE_TZ = True
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATIC_URL = "/static/"
+MEDIA_ROOT = BASE_DIR / "static/images"
 MEDIA_URL = "/images/"
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
-MEDIA_ROOT = BASE_DIR / "static/images"
 
 # STATIC_ROOT = [
 
@@ -153,3 +183,4 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 CORS_ALLOW_ALL_ORIGINS = True
+LOGIN_REDIRECT_URL = "/"
