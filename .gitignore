@@ -164,3 +164,11 @@ cython_debug/
 # Terraform 
 .terraform
 .terraform.lock.hcl
+*.tfstate*
+*.out
+
+# Logs 
+.logs/
+
+# Django 
+./RootToRoot/staticfiles/
