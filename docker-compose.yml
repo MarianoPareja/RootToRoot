@@ -1,16 +1,24 @@
 services:
-  django-gunicorn:
+  uwsgi:
     build: 
       context: .
+      dockerfile: Dockerfile
+    command: ["uwsgi", "--ini", "/app/conf/uwsgi/uwsgi.ini"]
+    restart: always
+    volumes:
+      - ./:/app
     ports:
-      - "8000:8000"
+      - 8000:8000
   
   nginx:
-    build: 
-      context: ./nginx
+    image: nginx:1.27.0
+    restart: always
+    volumes:
+      - ./conf/nginx:/etc/nginx/templates
+      - ./RootToRoot/staticfiles:/staticfiles
+      - ./ssl:/ssl
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
-      - django-gunicorn
-    volumes:
-      - ./RootToRoot/staticfiles:/staticfiles
+      - uwsgi
