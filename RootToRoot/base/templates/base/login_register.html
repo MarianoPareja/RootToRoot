@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="layout__body">
-        <h2 class="auth__tagline">Find your study partner</h2>
+        <h2 class="auth__tagline">Find your goods a second life</h2>
 
         <form class="form" action="" method="POST">
           {% csrf_token %}
@@ -53,6 +53,21 @@
           </button>
         </form>
 
+        {% load socialaccount %}
+        <div class="social-auth-methods">
+          <ul>
+            <li class="github">
+              <a href="{% provider_login_url 'github' process=login %}">Sign in with Github</a>
+            </li>
+            <li class="reddit">
+              <a href="{% provider_login_url 'reddit' process=login %}">Sign in with Reddit</a>
+            </li>
+            <li class="lichess">
+              <a href="{% provider_login_url 'lichess' process=login %}">Sign in with Lichess</a>
+            </li>
+          </ul>
+        </div>
+
         <div class="auth__action">
           <p>Haven't signed up yet?</p>
           <a href="{% url 'register' %}" class="btn btn--link">Sign Up</a>
@@ -70,7 +85,17 @@
         </div>
       </div>
       <div class="layout__body">
-        <h2 class="auth__tagline">Find your study partner</h2>
+        <h2 class="auth__tagline">Find your goods a second life</h2>
+
+        {% if messages %}  
+        <div class="messages">
+          {% for message in messages %}
+            <div class="message__{{ message.tags }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <form class="form" action="" method="POST">
           {% csrf_token %} {% for field in form %}
