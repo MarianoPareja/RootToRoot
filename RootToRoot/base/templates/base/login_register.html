@@ -31,7 +31,9 @@
               placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"
             />
           </div>
-
+          <div class="forgot__password">
+            <a href="{% url 'password_reset' %}">Forgot password?</a>
+          </div>
           <button class="btn btn--main" type="submit">
             <svg
               version="1.1"
@@ -53,24 +55,38 @@
           </button>
         </form>
 
+        <div class="auth__sepparation__line">
+          <hr class="auth__hr">
+          <p>Or login with</p>
+          <hr class="auth__hr">
+        </div>
+
+        
+
         {% load socialaccount %}
-        <div class="social-auth-methods">
+        <div class="social__auth__methods">
           <ul>
             <li class="github">
-              <a href="{% provider_login_url 'github' process=login %}">Sign in with Github</a>
+              <a href="{% provider_login_url 'github' process=login %}">
+                <img src="../../../static/images/jorge.jpeg">
+              </a>
             </li>
             <li class="reddit">
-              <a href="{% provider_login_url 'reddit' process=login %}">Sign in with Reddit</a>
+              <a href="{% provider_login_url 'reddit' process=login %}">
+                <img src="../../../static/images/jorge.jpeg">
+              </a>
             </li>
             <li class="lichess">
-              <a href="{% provider_login_url 'lichess' process=login %}">Sign in with Lichess</a>
+              <a href="{% provider_login_url 'lichess' process=login %}">
+                <img src="../../../static/images/jorge.jpeg"/>
+              </a>
             </li>
           </ul>
         </div>
 
         <div class="auth__action">
-          <p>Haven't signed up yet?</p>
-          <a href="{% url 'register' %}" class="btn btn--link">Sign Up</a>
+          <p>New to RootToRoot?</p>
+          <a href="{% url 'register' %}" class="btn btn--link">Join Now</a>
         </div>
       </div>
     </div>
