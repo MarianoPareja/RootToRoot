@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -22,29 +22,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "y7nuy!0spk%!r61ovr$rvf(4_sa)7g+6tpr72%o5dcw0p_x9ir"
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-# Keep list tight to prevent host headers attacks
-ALLOWED_HOSTS = ["*"]
-
-# Security
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
-SECURE_HSTS_SECONDS = 0
-
 
 # Application definition
 
 INSTALLED_APPS = [
+    "base.apps.BaseConfig",
+    "accounts.apps.AccountsConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "base.apps.BaseConfig",
     "rest_framework",
     "corsheaders",
     "allauth",
@@ -88,27 +77,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "RootToRoot.wsgi.application"
-
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    # LOCAL DB (DEVELOPMENT)
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    },
-    # AWS POSTGRES DATABASE (PROD)
-    # "default": {
-    #     "ENGINE": "django.db.backends.postgresql",
-    #     "NAME": "my_database",
-    #     "USER": "postgres",
-    #     "PASSWORD": "password",
-    #     "HOST": "database-1.cmy7hzzbkiwd.sa-east-1.rds.amazonaws.com",
-    #     "PORT": "5432",
-    # },
-}
 
 
 # Password validation
@@ -184,3 +152,13 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOW_ALL_ORIGINS = True
 LOGIN_REDIRECT_URL = "/"
+
+
+# SMTP Settings
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "mariano.portfolio.projects@gmail.com"
+EMAIL_HOST_PASSWORD = "setatblkszpumrmp"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
