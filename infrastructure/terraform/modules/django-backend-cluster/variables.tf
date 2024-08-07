@@ -9,3 +9,11 @@ variable "az_count" {
 variable "instance_type" {
   type = string
 }
+
+variable "ecr_url" {
+  type = string
+}
+
+variable "ecr_name" {
+  type = string
+}

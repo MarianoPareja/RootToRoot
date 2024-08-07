@@ -10,3 +10,11 @@ resource "aws_ecr_repository" "ecr-repo" {
     encryption_type = "AES256"
   }
 }
+
+output "ecr-uri" {
+  value = aws_ecr_repository.ecr-repo.repository_url
+}
+
+output "ecr-name" {
+  value = aws_ecr_repository.ecr-repo.name
+}

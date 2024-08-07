@@ -59,8 +59,8 @@ resource "aws_ecs_service" "service" {
 
   load_balancer {
     target_group_arn = aws_alb_target_group.service_target_group.arn
-    container_name   = "nginx-latest"
-    container_port   = 80
+    container_name   = "gunicorn"
+    container_port   = 8000
   }
 
   ordered_placement_strategy {
@@ -82,38 +82,43 @@ resource "aws_ecs_task_definition" "django-website-task-definition" {
   family             = "ECS_TaskDefinition_${var.environment}"
   execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn      = aws_iam_role.ecs_task_iam_role.arn
-
+  network_mode       = "bridge"
 
   container_definitions = jsonencode([
     {
-      "name"       = "nginx-latest",
-      "image"      = "nginx-latest",
-      "cpu"        = 100,
-      "memory"     = 256,
-      "essentials" = true,
-      "portMappings" = [
-        {
-          containerPort = 80,
-          hostPort      = 80,
-          protocol      = "tcp"
-        }
-      ]
-    },
-    {
       "name"       = "gunicorn",
-      "image"      = "guinicorn-latest",
+      "image"      = "${var.ecr_url}:guinicorn-latest",
       "cpu"        = 256,
       "memory"     = 512,
       "essentials" = true,
       "portMappings" = [
         {
           containerPort = 8000,
-          hostPort      = 8000,
-          protocol      = "tcp"
+          # No hostPort to allow dynamic port mapping
+          protocol = "tcp"
         }
       ]
-    }
+    },
+    # {
+    #   "name"       = "nginx",
+    #   "image"      = "${var.ecr_url}/${var.ecr_name}:nginx-latest",
+    #   "cpu"        = 100,
+    #   "memory"     = 256,
+    #   "essentials" = true,
+    #   "portMappings" = [
+    #     {
+    #       containerPort = 80,
+    #       # No hostPort to allow dynamic port mapping
+    #       protocol = "tcp"
+    #     }
+    #   ]
+    #   "depends_on" = "gunicorn",
+    #   "links" = [
+    #     "gunicorn"
+    #   ]
+    # },
   ])
+
 
 }
 
@@ -145,6 +150,7 @@ resource "aws_autoscaling_group" "ecs_autoscaling_group" {
   vpc_zone_identifier   = aws_subnet.private.*.id
   health_check_type     = "EC2"
   protect_from_scale_in = true
+
 
   launch_template {
     id      = aws_launch_template.ecs_launch_template.id
