@@ -26,7 +26,7 @@
       <!-- Logged In -->
       {% if request.user.is_authenticated %}
       <div class="header__user">
-        <a href="{% url 'update-user' %}">
+        <a href="{% url 'account_settings' %}">
           <div class="avatar avatar--medium active">
             <img src="{{request.user.avatar.url}}" />
           </div>
@@ -57,7 +57,7 @@
       {% endif %}
 
       <div class="dropdown-menu">
-        <a href="{% url 'update-user' %}" class="dropdown-link"
+        <a href="{% url 'account_settings' %}" class="dropdown-link"
           ><svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
