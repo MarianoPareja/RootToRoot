@@ -1,4 +1,4 @@
-{% extends 'main.html' %} {% block content %}
+{% extends 'main.html' %} {% block content %} {% load static %}
 <main class="auth layout">
   {% if page == 'login' %}
   <div class="container">
@@ -68,17 +68,17 @@
           <ul>
             <li class="github">
               <a href="{% provider_login_url 'github' process=login %}">
-                <img src="../../../static/images/jorge.jpeg">
+                <img src="{% static 'images/socials/github_logo.svg' %}">
               </a>
             </li>
             <li class="reddit">
               <a href="{% provider_login_url 'reddit' process=login %}">
-                <img src="../../../static/images/jorge.jpeg">
+                <img src="{% static 'images/socials/reddit_logo.png' %}">
               </a>
             </li>
             <li class="lichess">
               <a href="{% provider_login_url 'lichess' process=login %}">
-                <img src="../../../static/images/jorge.jpeg"/>
+                <img src="{% static 'images/socials/lichess_logo.svg' %}"/>
               </a>
             </li>
           </ul>
