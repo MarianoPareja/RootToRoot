@@ -11,4 +11,6 @@ module "django-backend-cluster" {
   environment   = "dev"
   az_count      = 2
   instance_type = "t3.micro"
+  ecr_url       = module.ecr.ecr-uri
+  ecr_name      = module.ecr.ecr-name
 }

@@ -206,10 +206,24 @@ resource "aws_alb" "alb" {
   subnets         = aws_subnet.public.*.id
 }
 
-resource "aws_alb_listener" "alb_default_listener_http" {
+# resource "aws_alb_listener" "alb_default_listener_http" {
+#   load_balancer_arn = aws_alb.alb.arn
+#   port              = "80"
+#   protocol          = "HTTP"
+
+#   default_action {
+#     type             = "forward"
+#     target_group_arn = aws_alb_target_group.service_target_group.arn
+#   }
+# }
+
+resource "aws_alb_listener" "ecs_alb_https_listener" {
   load_balancer_arn = aws_alb.alb.arn
-  port              = "80"
-  protocol          = "HTTP"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08" # CHECK THIS LATER
+  certificate_arn   = "UPDATE"
+  depends_on        = [aws_alb_target_group.service_target_group]
 
   default_action {
     type             = "forward"
@@ -234,7 +248,7 @@ resource "aws_lb_listener_rule" "http_listener_rule" {
 
 resource "aws_alb_target_group" "service_target_group" {
   name                 = "TargetGroup-${var.environment}"
-  port                 = "80" #Port on which target recieves traffic
+  port                 = "8000" #Port on which target recieves traffic
   protocol             = "HTTP"
   vpc_id               = aws_vpc.default.id
   deregistration_delay = 120
