@@ -1,4 +1,4 @@
-{% extends 'main.html' %} {% block content %}
+{% extends 'main.html' %} {% load register_form_filters %} {% load static %} {% block content %} 
 <main class="auth layout">
   {% if page == 'login' %}
   <div class="container">
@@ -32,7 +32,7 @@
             />
           </div>
           <div class="forgot__password">
-            <a href="{% url 'password_reset' %}">Forgot password?</a>
+            <a href="{% url 'base:password_reset' %}">Forgot password?</a>
           </div>
           <button class="btn btn--main" type="submit">
             <svg
@@ -68,17 +68,17 @@
           <ul>
             <li class="github">
               <a href="{% provider_login_url 'github' process=login %}">
-                <img src="../../../static/images/jorge.jpeg">
+                <img src="{% static 'images/socials/github_logo.svg' %}">
               </a>
             </li>
             <li class="reddit">
               <a href="{% provider_login_url 'reddit' process=login %}">
-                <img src="../../../static/images/jorge.jpeg">
+                <img src="{% static 'images/socials/reddit_logo.png' %}">
               </a>
             </li>
             <li class="lichess">
               <a href="{% provider_login_url 'lichess' process=login %}">
-                <img src="../../../static/images/jorge.jpeg"/>
+                <img src="{% static 'images/socials/lichess_logo.svg' %}"/>
               </a>
             </li>
           </ul>
@@ -86,7 +86,7 @@
 
         <div class="auth__action">
           <p>New to RootToRoot?</p>
-          <a href="{% url 'register' %}" class="btn btn--link">Join Now</a>
+          <a href="{% url 'base:register' %}" class="btn btn--link">Join Now</a>
         </div>
       </div>
     </div>
@@ -113,15 +113,21 @@
         </div>
         {% endif %}
 
+        <div class="register-form--messages">
+          <div class="register-form--messages__alert" id="mismatch-passwords-message">
+            <p>Passwords do not match</p>
+          </div>
+        </div>
+
         <form class="form" action="" method="POST">
           {% csrf_token %} {% for field in form %}
           <div class="form__group form__group">
-            <label for="room_name">{{field.label}}</label>
-            {{field}}
+            <label for="{{ field.id_for_label }}">{{field.label}}</label>
+            {{ field|addclass:'register-form'|lower }}
           </div>
           {% endfor %}
 
-          <button class="btn btn--main" type="submit">
+          <button class="btn btn--main register-form__submitbutton" type="submit">
             <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
@@ -144,7 +150,7 @@
 
         <div class="auth__action">
           <p>Already signed up?</p>
-          <a href="{% url 'login' %}" class="btn btn--link">Login</a>
+          <a href="{% url 'base:login' %}" class="btn btn--link">Login</a>
         </div>
       </div>
     </div>

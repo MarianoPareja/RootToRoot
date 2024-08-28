@@ -6,7 +6,7 @@
     <div class="room">
       <div class="room__top">
         <div class="room__topLeft">
-          <a href="{% url 'home' %}">
+          <a href="{% url 'base:home' %}">
             <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
@@ -25,7 +25,7 @@
 
         {% if room.host == request.user %}
         <div class="room__topRight">
-          <a href="{% url 'update-room' room.id %}">
+          <a href="{% url 'base:update-room' room.id %}">
             <svg
               enable-background="new 0 0 24 24"
               height="32"
@@ -54,7 +54,7 @@
             </svg>
           </a>
 
-          <a href="{% url 'delete-room' room.id %}">
+          <a href="{% url 'base:delete-room' room.id %}">
             <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
@@ -81,7 +81,7 @@
           <div class="room__hosted">
             <p>Hosted By</p>
             <a
-              href="{% url 'user-profile' room.host.id %}"
+              href="{% url 'base:user-profile' room.host.id %}"
               class="room__author"
             >
               <div class="avatar avatar--small">
@@ -105,7 +105,7 @@
               <div class="thread__top">
                 <div class="thread__author">
                   <a
-                    href="{% url 'user-profile' message.user.id}"
+                    href="{% url 'base:user-profile' message.user.id}"
                     class="thread__authorInfo"
                   >
                     <div class="avatar avatar--small">
@@ -122,7 +122,7 @@
 
 
                 {% if message.user == request.user %}
-                <a href="{% url 'delete-message' message.id %}">
+                <a href="{% url 'base:delete-message' message.id %}">
                 <div class="thread__delete">
                   <svg
                     version="1.1"

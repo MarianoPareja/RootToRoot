@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordResetForm
 from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -21,7 +22,7 @@ def loginPage(request):
     page = "login"
 
     if request.user.is_authenticated:
-        return redirect("home")
+        return redirect("base:home")
 
     if request.method == "POST":
         email = request.POST.get("email").lower()
@@ -36,7 +37,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
-            return redirect("home")
+            return redirect("base:home")
         else:
             messages.error(request, "Username or password does not exist")
 
@@ -46,7 +47,7 @@ def loginPage(request):
 
 def logoutUser(request):
     logout(request)
-    return redirect("home")
+    return redirect("base:home")
 
 
 def registerUser(request):
@@ -59,7 +60,7 @@ def registerUser(request):
             user.username = user.username.lower()
             user.save()
             login(request, user)
-            return redirect("home")
+            return redirect("base:home")
         else:
             messages.error(request, form.errors)
 
@@ -75,7 +76,7 @@ def home(request):
 
     topics = Topic.objects.all()[0:5]
     room_count = rooms.count()
-    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))
+    room_messages = Message.objects.filter(Q(room__topic__name__icontains=q))[:8]
 
     context = {
         "rooms": rooms,
@@ -96,7 +97,7 @@ def room(request, pk):
             user=request.user, room=room, body=request.POST.get("body")
         )
         room.participants.add(request.user)
-        return redirect("room", pk=room.id)
+        return redirect("base:room", pk=room.id)
 
     context = {"room": room, "room_messages": room_messages, "participant": participant}
     return render(request, "base/room.html", context)
@@ -132,7 +133,7 @@ def create_room(request):
             description=request.POST.get("description"),
         )
 
-        return redirect("home")
+        return redirect("base:home")
 
     context = {"form": form, "topics": topics}
     return render(request, "base/room_form.html", context)
@@ -154,7 +155,7 @@ def updateRoom(request, pk):
         room.topic = topic
         room.description = request.POST.get("description")
         room.save()
-        return redirect("home")
+        return redirect("base:home")
 
     context = {"form": form, "topics": topics, "room": room}
     return render(request, "base/room_form.html", context)
@@ -169,7 +170,7 @@ def deleteRoom(request, pk):
 
     if request.method == "POST":
         room.delete()
-        return redirect("home")
+        return redirect("base:home")
     return render(request, "base/delete.html", {"obj": room})
 
 
@@ -182,7 +183,7 @@ def deleteMessage(request, pk):
 
     if request.method == "POST":
         message.delete()
-        return redirect("home")
+        return redirect("base:home")
     return render(request, "base/delete.html", {"obj": message})
 
 
@@ -195,7 +196,7 @@ def updateUser(request):
         form = UserForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
-            return redirect("user-profile", pk=user.id)
+            return redirect("base:user-profile", pk=user.id)
 
     context = {"form": form}
     return render(request, "base/update-user.html", context)

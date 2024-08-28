@@ -67,3 +67,27 @@ if (photoInput)
 // Scroll to Bottom
 const conversationThread = document.querySelector(".room__box");
 if (conversationThread) conversationThread.scrollTop = conversationThread.scrollHeight;
+
+// Check password
+const passwordInput = document.querySelector("#id_password1");
+const confirmPasswordInput = document.querySelector("#id_password2");
+const submitButton = document.querySelector(".register-form__submitbutton");
+const mismatchMessage = document.querySelector("#mismatch-passwords-message")
+
+function validatePasswords(){
+  const password = passwordInput.value;
+  const confirmPassword = confirmPasswordInput.value;
+
+  const isMatching = password === confirmPassword
+
+  if (isMatching){
+    submitButton.disabled = false;
+    mismatchMessage.style.display = "none"
+  }else{
+    submitButton.disabled = true;
+    mismatchMessage.style.display = "block"
+  }
+}
+
+passwordInput.addEventListener('input', validatePasswords);
+confirmPasswordInput.addEventListener('input',validatePasswords);
