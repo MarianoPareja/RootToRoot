@@ -4,7 +4,7 @@
     <div class="layout__box">
       <div class="layout__boxHeader">
         <div class="layout__boxTitle">
-          <a href="{% url 'home' %}">
+          <a href="{% url 'base:home' %}">
             <svg
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
@@ -43,13 +43,13 @@
 
         <ul class="topics__list">
           <li>
-            <a href="{% url 'topics' %}" class="active"
+            <a href="{% url 'base:topics' %}" class="active"
               >All <span>{{topics.count}}</span></a
             >
           </li>
           {% for topic in topics %}
           <li>
-            <a href="{% url 'home' %}?q={{topic.name}}"
+            <a href="{% url 'base:home' %}?q={{topic.name}}"
               >{{topic.name}} <span>{{topic.count}}</span></a
             >
           </li>

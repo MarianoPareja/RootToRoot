@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.urls import reverse
 
 
 class User(AbstractUser):
@@ -14,6 +15,9 @@ class User(AbstractUser):
 
     def create_superuser(self, username, email, password):
         pass
+
+    def get_absolute_url(self):
+        return reverse("base:user-profile", args=[self.id])
 
 
 # Create your models here.

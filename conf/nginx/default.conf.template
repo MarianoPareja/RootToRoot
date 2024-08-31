@@ -1,0 +1,28 @@
+#Upstream for uWSGI
+upstream uwsgi_app{
+    server uwsgi:8000;
+}
+
+server{
+    listen 80;
+    listen 443 ssl;
+    ssl_certificate /ssl/django.crt;
+    ssl_certificate_key /ssl/django.key;
+
+    server_name localhost;
+    error_log /var/log/nginx/error2.log warn;
+    access_log /var/log/nginx/access2.log main;
+
+    location /static { 
+        alias /staticfiles;
+    }
+
+    location /images {
+        alias /staticfiles/images;
+    }
+
+    location / {
+        include /etc/nginx/uwsgi_params;
+        uwsgi_pass uwsgi_app; 
+    }
+}
