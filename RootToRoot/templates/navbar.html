@@ -1,11 +1,11 @@
 {% load static %}
 <header class="header header--loggedIn">
   <div class="container">
-    <a href="{% url 'base:home' %}" class="header__logo">
+    <a href="{% url 'core:home' %}" class="header__logo">
       <img src="{% static 'images/logo.svg' %}" />
       <h1>RootToRoot</h1>
     </a>
-    <form class="header__search" method="GET" action="{% url 'base:home' %}">
+    <form class="header__search" method="GET" action="{% url 'core:home' %}">
       <label>
         <svg
           version="1.1"
@@ -50,14 +50,14 @@
 
       {% else %}
       <!-- Not Logged In -->
-      <a href="{% url 'base:login' %}">
+      <a href="{% url 'accounts:login' %}">
         <img src="{% static 'images/avatar.svg' %}" />
         <p>Login</p>
       </a>
       {% endif %}
 
       <div class="dropdown-menu">
-        <a href="{% url 'account:account_settings' %}" class="dropdown-link"
+        <a href="{% url 'accounts:account_settings' %}" class="dropdown-link"
           ><svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"
@@ -72,7 +72,7 @@
           </svg>
           Settings</a
         >
-        <a href="{% url 'base:logout' %}" class="dropdown-link"
+        <a href="{% url 'accounts:logout' %}" class="dropdown-link"
           ><svg
             version="1.1"
             xmlns="http://www.w3.org/2000/svg"

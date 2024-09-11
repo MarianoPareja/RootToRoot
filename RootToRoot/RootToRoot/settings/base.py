@@ -26,8 +26,9 @@ SECRET_KEY = "y7nuy!0spk%!r61ovr$rvf(4_sa)7g+6tpr72%o5dcw0p_x9ir"
 # Application definition
 
 INSTALLED_APPS = [
-    "base.apps.BaseConfig",
+    "core.apps.CoreConfig",
     "accounts.apps.AccountsConfig",
+    "messaging.apps.MessagingConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -38,13 +39,13 @@ INSTALLED_APPS = [
     "corsheaders",
     "allauth",
     "allauth.account",
-    "allauth.socialaccount",
-    "allauth.socialaccount.providers.github",
-    "allauth.socialaccount.providers.reddit",
-    "allauth.socialaccount.providers.lichess",
+    #"allauth.socialaccount",
+    #"allauth.socialaccount.providers.github",
+    #"allauth.socialaccount.providers.reddit",
+    #"allauth.socialaccount.providers.lichess",
 ]
 
-AUTH_USER_MODEL = "base.User"
+AUTH_USER_MODEL = "accounts.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
