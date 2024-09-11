@@ -1,17 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap");
 
-:root { 
-  --color-main: #484947;  
-  --color-main-light: #9b9c9a;  
-  --color-dark: #273f2e;  
-  --color-dark-medium: #929292;  
-  --color-dark-light: #6d706c; 
-  --color-light: #ffffff;  
-  --color-gray: #efeeec; 
-  --color-light-gray: #fdfdfc;  
-  --color-bg: #b9bbaf;  
-  --color-success: #00C853;  
-  --color-error: #b74b4b;  
+:root {
+  --color-main: #484947;
+  --color-main-light: #9b9c9a;
+  --color-dark: #273f2e;
+  --color-dark-medium: #929292;
+  --color-dark-light: #6d706c;
+  --color-light: #ffffff;
+  --color-gray: #efeeec;
+  --color-light-gray: #fdfdfc;
+  --color-bg: #b9bbaf;
+  --color-success: #00C853;
+  --color-error: #b74b4b;
 }
 
 
@@ -420,6 +420,16 @@ a {
 .layout--2 > .container > div:last-child {
   flex-basis: 25%;
 }
+
+.layout--messaging > .container > div:first-child{
+    flex-basis: 25%;
+}
+
+.layout--messaging > .container > div:last-child {
+    flex-basis: 75%;
+}
+
+
 /*========== Layout Box ==========*/
 
 .layout__box {
@@ -903,7 +913,7 @@ a {
 }
 
 .auth__hr{
-  border: 0.5px solid #ccc; 
+  border: 0.5px solid #ccc;
   margin: 20px 0;
   flex-grow: 1;
 }
@@ -1252,5 +1262,12 @@ a {
 .message__error{
   background-color: rgba(255, 0, 0, 0.4);
   text-align: center;
-  padding: 0.5rem 0 
+  padding: 0.5rem 0
 }
+
+
+/*==============================
+=>  Chat messages
+================================*/
+
+

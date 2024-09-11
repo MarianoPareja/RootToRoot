@@ -1,0 +1,31 @@
+{% import 'main.py' %}{% block content %}
+
+<div class="layout--2">
+    <div class="privatechat__sidebar">
+        <div class="privatechat__searchbar">
+            <input type="text" placeholder="Search..">
+        </div>
+        <div class="privatechat--chats__history">
+            <!--- display all the message from the database -->
+        </div>
+    </div>
+    <div class="privatechat--content__container">
+        <div class="privatechat--userinfo__container">
+            <div class="privatechat--userinfo__photo"></div>
+            <div class="privatechat--userinfo__name"></div>
+            <div class="privatechat--userinfo__status">
+                <!--- status display online/offline or last seen --->
+            </div>
+        </div>
+        <div class="privatechat--content__messages">
+            <!--- display all the messages for the current converstaion
+            user pagination upwards to load only in batches of 10 --->
+        </div>
+        <div class="privatechat--message">
+            <input type="text" placeholder="Enter your message...">
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
